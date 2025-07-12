@@ -22,3 +22,4 @@
    git clone <ссылка_на_репозиторий>
    cd Sprint_6
 # Немного изменений для PR
+# update Sat Jul 12 06:53:37 CEST 2025
