@@ -1,22 +1,22 @@
+from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class OrderPage:
+class OrderPage(BasePage):
     def __init__(self, driver):
-        self.driver = driver
-        self.wait = WebDriverWait(driver, 10)
+        super().__init__(driver)
 
     def wait_visibility_of_element(self, locator):
-        return self.wait.until(EC.visibility_of_element_located(locator))
+        return self.wait.until(lambda d: d.find_element(*locator).is_displayed())
 
     def scroll_to_element(self, locator):
-        element = self.wait_visibility_of_element(locator)
+        element = self.wait.until(lambda d: d.find_element(*locator))
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
 
     def click_button(self, locator):
-        self.wait.until(EC.element_to_be_clickable(locator)).click()
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        element.click()
 
     def input_name(self, name):
         self.driver.find_element(By.XPATH, '//input[@placeholder="* Имя"]').send_keys(name)
@@ -28,11 +28,11 @@ class OrderPage:
         self.driver.find_element(By.XPATH, '//input[@placeholder="* Адрес: куда привезти заказ"]').send_keys(address)
 
     def enter_metro_station(self, station_name):
-        metro_input = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//input[@placeholder="* Станция метро"]')))
+        metro_input = self.wait.until(lambda d: d.find_element(By.XPATH, '//input[@placeholder="* Станция метро"]'))
         metro_input.click()
         metro_input.send_keys(station_name)
         self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, f'//div[@class="select-search__select"]//div[text()="{station_name}"]'))
+            lambda d: d.find_element(By.XPATH, f'//div[@class="select-search__select"]//div[text()="{station_name}"]')
         ).click()
 
     def input_phone(self, phone):
@@ -49,7 +49,6 @@ class OrderPage:
         self.input_phone(data["phone"])
         self.click_next_button()
 
-    # Новый метод для второго шага
     def input_date(self, date_str):
         date_input = self.driver.find_element(By.XPATH, '//input[@placeholder="* Когда привезти самокат"]')
         date_input.send_keys(date_str)

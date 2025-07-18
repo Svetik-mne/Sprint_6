@@ -1,24 +1,23 @@
 import pytest
+import allure
 from pages.main_page import MainPage
-from selenium.webdriver.support.ui import WebDriverWait
 
-def test_logo_scooter_redirects_to_main(driver):
-    page = MainPage(driver)
-    page.open()
-    page.click_order_button_header()
-    page.click_logo_scooter()
-    WebDriverWait(driver, 10).until(lambda d: "https://qa-scooter.praktikum-services.ru/" in d.current_url)
-    assert "https://qa-scooter.praktikum-services.ru/" in driver.current_url
+@allure.suite("Переходы по логотипам")
+class TestLogoRedirects:
 
-def test_logo_yandex_redirects_to_dzen(driver):
-    page = MainPage(driver)
-    page.open()
-    original_window = driver.current_window_handle
-    page.click_logo_yandex()
+    @allure.title("Проверка, что логотип Самоката ведет на главную страницу")
+    def test_logo_scooter_redirects_to_main(self, driver):
+        page = MainPage(driver)
+        page.open()
+        page.click_order_button_header()
+        page.click_logo_scooter()
+        page.check_url_contains("https://qa-scooter.praktikum-services.ru/")
 
-    WebDriverWait(driver, 10).until(lambda d: len(d.window_handles) > 1)
-    new_window = [w for w in driver.window_handles if w != original_window][0]
-    driver.switch_to.window(new_window)
-
-    WebDriverWait(driver, 10).until(lambda d: "dzen.ru" in d.current_url)
-    assert "dzen.ru" in driver.current_url
+    @allure.title("Проверка, что логотип Яндекса открывает Dzen в новой вкладке")
+    def test_logo_yandex_redirects_to_dzen(self, driver):
+        page = MainPage(driver)
+        page.open()
+        original_window = driver.current_window_handle
+        page.click_logo_yandex()
+        page.switch_to_new_window(original_window)
+        page.check_url_contains("dzen.ru")
