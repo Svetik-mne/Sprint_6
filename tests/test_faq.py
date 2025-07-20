@@ -3,6 +3,7 @@ import allure
 from data import TestData
 from pages.main_page import MainPage
 
+
 @allure.suite("FAQ секция")
 class TestFAQ:
 
